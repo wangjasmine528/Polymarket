@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package worldmonitor.supply_chain.v1;
+
+import "sebuf/http/annotations.proto";
+import "worldmonitor/supply_chain/v1/get_shipping_rates.proto";
+import "worldmonitor/supply_chain/v1/get_chokepoint_status.proto";
+import "worldmonitor/supply_chain/v1/get_critical_minerals.proto";
+import "worldmonitor/supply_chain/v1/get_shipping_stress.proto";
+import "worldmonitor/supply_chain/v1/get_country_chokepoint_index.proto";
+import "worldmonitor/supply_chain/v1/get_bypass_options.proto";
+import "worldmonitor/supply_chain/v1/get_country_cost_shock.proto";
+import "worldmonitor/supply_chain/v1/get_sector_dependency.proto";
+import "worldmonitor/supply_chain/v1/get_route_explorer_lane.proto";
+import "worldmonitor/supply_chain/v1/get_route_impact.proto";
+
+service SupplyChainService {
+  option (sebuf.http.service_config) = {base_path: "/api/supply-chain/v1"};
+
+  rpc GetShippingRates(GetShippingRatesRequest) returns (GetShippingRatesResponse) {
+    option (sebuf.http.config) = {path: "/get-shipping-rates", method: HTTP_METHOD_GET};
+  }
+
+  rpc GetChokepointStatus(GetChokepointStatusRequest) returns (GetChokepointStatusResponse) {
+    option (sebuf.http.config) = {path: "/get-chokepoint-status", method: HTTP_METHOD_GET};
+  }
+
+  rpc GetCriticalMinerals(GetCriticalMineralsRequest) returns (GetCriticalMineralsResponse) {
+    option (sebuf.http.config) = {path: "/get-critical-minerals", method: HTTP_METHOD_GET};
+  }
+
+  // GetShippingStress returns carrier market data and a composite stress index.
+  rpc GetShippingStress(GetShippingStressRequest) returns (GetShippingStressResponse) {
+    option (sebuf.http.config) = {path: "/get-shipping-stress", method: HTTP_METHOD_GET};
+  }
+
+  // GetCountryChokepointIndex returns per-chokepoint exposure scores for a country. PRO-gated.
+  rpc GetCountryChokepointIndex(GetCountryChokepointIndexRequest) returns (GetCountryChokepointIndexResponse) {
+    option (sebuf.http.config) = {path: "/get-country-chokepoint-index", method: HTTP_METHOD_GET};
+  }
+
+  // GetBypassOptions returns ranked bypass corridors for a chokepoint. PRO-gated.
+  rpc GetBypassOptions(GetBypassOptionsRequest) returns (GetBypassOptionsResponse) {
+    option (sebuf.http.config) = {path: "/get-bypass-options", method: HTTP_METHOD_GET};
+  }
+
+  // GetCountryCostShock returns cost shock and war risk data for a country+chokepoint. PRO-gated.
+  rpc GetCountryCostShock(GetCountryCostShockRequest) returns (GetCountryCostShockResponse) {
+    option (sebuf.http.config) = {path: "/get-country-cost-shock", method: HTTP_METHOD_GET};
+  }
+
+  // GetSectorDependency returns dependency flags and risk profile for a country+HS2 sector. PRO-gated.
+  rpc GetSectorDependency(GetSectorDependencyRequest) returns (GetSectorDependencyResponse) {
+    option (sebuf.http.config) = {path: "/get-sector-dependency", method: HTTP_METHOD_GET};
+  }
+
+  // GetRouteExplorerLane returns the primary maritime route, chokepoint exposures,
+  // bypass options with geometry, war risk, and static transit/freight estimates for
+  // a country pair + HS2 + cargo type. PRO-gated. Wraps the route-intelligence vendor
+  // endpoint's compute with browser-callable auth and adds fields needed by the
+  // Route Explorer UI.
+  rpc GetRouteExplorerLane(GetRouteExplorerLaneRequest) returns (GetRouteExplorerLaneResponse) {
+    option (sebuf.http.config) = {path: "/get-route-explorer-lane", method: HTTP_METHOD_GET};
+  }
+
+  rpc GetRouteImpact(GetRouteImpactRequest) returns (GetRouteImpactResponse) {
+    option (sebuf.http.config) = {path: "/get-route-impact", method: HTTP_METHOD_GET};
+  }
+}
