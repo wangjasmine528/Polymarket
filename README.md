@@ -1,167 +1,117 @@
-# World Monitor
+# Polymarket Agent 扩展（WorldMonitor 代码库内）
 
-**Real-time global intelligence dashboard** — AI-powered news aggregation, geopolitical monitoring, and infrastructure tracking in a unified situational awareness interface.
-
-[![GitHub stars](https://img.shields.io/github/stars/koala73/worldmonitor?style=social)](https://github.com/koala73/worldmonitor/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/koala73/worldmonitor?style=social)](https://github.com/koala73/worldmonitor/network/members)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=flat&logo=discord&logoColor=white)](https://discord.gg/re63kWKxaz)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Last commit](https://img.shields.io/github/last-commit/koala73/worldmonitor)](https://github.com/koala73/worldmonitor/commits/main)
-[![Latest release](https://img.shields.io/github/v/release/koala73/worldmonitor?style=flat)](https://github.com/koala73/worldmonitor/releases/latest)
-
-<p align="center">
-  <a href="https://worldmonitor.app"><img src="https://img.shields.io/badge/Web_App-worldmonitor.app-blue?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Web App"></a>&nbsp;
-  <a href="https://tech.worldmonitor.app"><img src="https://img.shields.io/badge/Tech_Variant-tech.worldmonitor.app-0891b2?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Tech Variant"></a>&nbsp;
-  <a href="https://finance.worldmonitor.app"><img src="https://img.shields.io/badge/Finance_Variant-finance.worldmonitor.app-059669?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Finance Variant"></a>&nbsp;
-  <a href="https://commodity.worldmonitor.app"><img src="https://img.shields.io/badge/Commodity_Variant-commodity.worldmonitor.app-b45309?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Commodity Variant"></a>&nbsp;
-  <a href="https://happy.worldmonitor.app"><img src="https://img.shields.io/badge/Happy_Variant-happy.worldmonitor.app-f59e0b?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Happy Variant"></a>
-</p>
-
-<p align="center">
-  <a href="https://worldmonitor.app/api/download?platform=windows-exe"><img src="https://img.shields.io/badge/Download-Windows_(.exe)-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows"></a>&nbsp;
-  <a href="https://worldmonitor.app/api/download?platform=macos-arm64"><img src="https://img.shields.io/badge/Download-macOS_Apple_Silicon-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS ARM"></a>&nbsp;
-  <a href="https://worldmonitor.app/api/download?platform=macos-x64"><img src="https://img.shields.io/badge/Download-macOS_Intel-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel"></a>&nbsp;
-  <a href="https://worldmonitor.app/api/download?platform=linux-appimage"><img src="https://img.shields.io/badge/Download-Linux_(.AppImage)-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Download Linux"></a>
-</p>
-
-<p align="center">
-  <a href="https://www.worldmonitor.app/docs/documentation"><strong>Documentation</strong></a> &nbsp;·&nbsp;
-  <a href="https://github.com/koala73/worldmonitor/releases/latest"><strong>Releases</strong></a> &nbsp;·&nbsp;
-  <a href="https://www.worldmonitor.app/docs/contributing"><strong>Contributing</strong></a>
-</p>
-
-![World Monitor Dashboard](docs/images/worldmonitor-7-mar-2026.jpg)
+本仓库主体仍是 **[WorldMonitor](https://github.com/koala73/worldmonitor)** 实时情报大盘；本 **README** 只概括你完成的 **Polymarket 预测市场 Agent（设计稿模块 1～4）**、与 **prediction seed** 的接线。更细的字段与环境变量见 **[docs/reports/polymarket-seed-modules-1-4-report.md](docs/reports/polymarket-seed-modules-1-4-report.md)**。上游架构与全站开发说明见 **[AGENTS.md](AGENTS.md)**。
 
 ---
 
-## What It Does
+## 你做了哪些事（一句话版）
 
-- **435+ curated news feeds** across 15 categories, AI-synthesized into briefs
-- **Dual map engine** — 3D globe (globe.gl) and WebGL flat map (deck.gl) with 45 data layers
-- **Cross-stream correlation** — military, economic, disaster, and escalation signal convergence
-- **Country Intelligence Index** — composite risk scoring across 12 signal categories
-- **Finance radar** — 92 stock exchanges, commodities, crypto, and 7-signal market composite
-- **Local AI** — run everything with Ollama, no API keys required
-- **5 site variants** from a single codebase (world, tech, finance, commodity, happy)
-- **Native desktop app** (Tauri 2) for macOS, Windows, and Linux
-- **21 languages** with native-language feeds and RTL support
+1. **模块 1**：用规则从 Polymarket / Kalshi 原始市场里**粗筛**出一批候选（价格、流动性、点差、到期等），并做事件级去重、低价侧（YES/NO）择一。  
+2. **模块 2**：按**时间序列快照 jsonl**（多次采样同一事件）拼出「类 K 线」的 `closes` / 成交量差分，做 **5 类智慧资金信号**；可用 CLI 单独跑检测。  
+3. **模块 3**：按设计稿做多源融合（`P_llm`、基准率、新闻、相关市场）；实现 **Prompt、解析、融合、edge**；Seed 里默认用**不调用 API 的降级版**，也可对前 N 条打开 **Claude 真融合**。  
+4. **模块 4**：**Kelly** + **Bull / Bear / 裁判** 的 Prompt 与 JSON 解析；**离线 stub** 与 **Anthropic 三阶段** 两种路径；Seed 里默认 stub，可选与 CLI 相同的真实辩论。  
+5. **与 Seed 接线**：在 `seed-prediction-markets.mjs` 里，对每条 **`candidates[]`** 挂上 `smartMoney`、`probabilityEstimate`、`agentValidation`，并写顶层 **`polymarketEnrichment`** 元数据。
 
-For the full feature list, architecture, data sources, and algorithms, see the **[documentation](https://www.worldmonitor.app/docs/documentation)**.
+设计总纲：`Polymarket-Agent交易系统设计(2).md`。
 
 ---
 
-## Quick Start
+## 主要代码在哪
+
+| 做什么 | 文件 |
+|--------|------|
+| 模块 1 粗筛与候选 | `scripts/_prediction-scoring.mjs`（`buildModule1Candidates` 等） |
+| 拉市场 + 跑 enrichment 写 Redis | `scripts/seed-prediction-markets.mjs` |
+| 把 2/3/4 挂到每条 candidate | `scripts/_polymarket-seed-enrichment.mjs` |
+| Anthropic 共用调用 | `scripts/_polymarket-anthropic.mjs` |
+| 模块 2 检测与 jsonl 解析 | `scripts/_polymarket-smart-money.mjs`、`scripts/polymarket-kline-detect.mjs` |
+| 模块 3 概率与 Prompt | `scripts/_polymarket-probability.mjs` |
+| 模块 4 多 Agent + Kelly | `scripts/_polymarket-multi-agent.mjs`、`scripts/polymarket-module4-validate.mjs` |
+| 单一事件快照采样 | `scripts/polymarket-us-iran-peace-snapshot.mjs`、burst / watch 脚本 |
+
+---
+
+## 怎么运行（常用命令）
+
+**预测市场 Seed（写 Redis，需要 Redis + 外网 + 项目 `.env`）**
 
 ```bash
-git clone https://github.com/koala73/worldmonitor.git
-cd worldmonitor
+node scripts/seed-prediction-markets.mjs
+```
+
+可选：**真实 Claude（模块 3 + 模块 4）** 只处理列表里**前 N 条**候选（注意费用与限流）：
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+export POLYMARKET_SEED_LLM=1
+export POLYMARKET_SEED_LLM_MAX=5
+export POLYMARKET_SEED_LLM_DELAY_MS=450
+node scripts/seed-prediction-markets.mjs
+```
+
+快照 jsonl 路径（模块 2 对齐用）：默认 `data/polymarket/us-iran-peace-deal-timeseries.jsonl`，可用环境变量 **`POLYMARKET_SNAPSHOT_JSONL`** 覆盖。
+
+**模块 2：单次采样 / 连采 / 看门**
+
+```bash
+npm run polymarket:sample:us-iran-peace
+npm run polymarket:burst:us-iran-peace
+npm run polymarket:watch:us-iran-peace
+```
+
+**模块 2：对 jsonl 跑检测**
+
+```bash
+node scripts/polymarket-kline-detect.mjs
+node scripts/polymarket-kline-detect.mjs --help
+```
+
+**模块 4：本地演示（stub）或真 LLM**
+
+```bash
+npm run polymarket:module4
+node scripts/polymarket-module4-validate.mjs --input path/to/case.json
+export ANTHROPIC_API_KEY=...
+node scripts/polymarket-module4-validate.mjs --input path/to/case.json --llm
+```
+
+**整站前端（与原 WorldMonitor 一致，与本 Polymarket 脚本无强依赖）**
+
+```bash
 npm install
 npm run dev
 ```
 
-Open [localhost:5173](http://localhost:5173). No environment variables required for basic operation.
+---
 
-For variant-specific development:
+## 怎么测（对应到代码）
 
-```bash
-npm run dev:tech       # tech.worldmonitor.app
-npm run dev:finance    # finance.worldmonitor.app
-npm run dev:commodity  # commodity.worldmonitor.app
-npm run dev:happy      # happy.worldmonitor.app
-```
+下面命令都在仓库根目录执行。
 
-See the **[self-hosting guide](https://www.worldmonitor.app/docs/getting-started)** for deployment options (Vercel, Docker, static).
+| 测什么 | 命令 |
+|--------|------|
+| 模块 1 粗筛 / 候选 | `node --test tests/market-scan-coarse-filter.test.mjs` |
+| 旧版 prediction 打分相关 | `node --test tests/prediction-scoring.test.mjs` |
+| 模块 2 智慧资金 | `node --test tests/polymarket-smart-money-detector.test.mjs` |
+| 模块 3 概率融合与 Seed 降级 | `node --test tests/polymarket-probability-estimator.test.mjs` |
+| Seed 接线 + mock LLM 异步路径 | `node --test tests/polymarket-seed-enrichment.test.mjs` |
+| 模块 4 Kelly / stub / mock LLM | `node --test tests/polymarket-module4-multi-agent.test.mjs` |
+| 仓库里所有 `tests/*.test.mjs` / `.mts` | `npm run test:data` |
 
 ---
 
-## Tech Stack
+## 详细报告索引
 
-| Category | Technologies |
-|----------|-------------|
-| **Frontend** | Vanilla TypeScript, Vite, globe.gl + Three.js, deck.gl + MapLibre GL |
-| **Desktop** | Tauri 2 (Rust) with Node.js sidecar |
-| **AI/ML** | Ollama / Groq / OpenRouter, Transformers.js (browser-side) |
-| **API Contracts** | Protocol Buffers (92 protos, 22 services), sebuf HTTP annotations |
-| **Deployment** | Vercel Edge Functions (60+), Railway relay, Tauri, PWA |
-| **Caching** | Redis (Upstash), 3-tier cache, CDN, service worker |
-
-Full stack details in the **[architecture docs](https://www.worldmonitor.app/docs/architecture)**.
+| 文档 |
+|------|
+| [总览：模块 1～4 + Seed](docs/reports/polymarket-seed-modules-1-4-report.md) |
+| [模块 1](docs/reports/module1-market-scan-report.md) |
+| [模块 2 实现](docs/reports/polymarket-module2-implementation-summary.md) · [采样流程](docs/reports/polymarket-module2-sampling-flow.md) |
+| [模块 3](docs/reports/polymarket-module3-probability-report.md) |
+| [模块 4](docs/reports/polymarket-module4-multi-agent-report.md) |
 
 ---
 
-## Flight Data
+## 许可证与上游
 
-Flight data provided gracefully by [Wingbits](https://wingbits.com?utm_source=worldmonitor&utm_medium=referral&utm_campaign=worldmonitor), the most advanced ADS-B flight data solution.
-
----
-
-## Data Sources
-
-WorldMonitor aggregates 65+ external data sources across geopolitics, finance, energy, climate, aviation, cyber, military, infrastructure, and news intelligence. See the full [data sources catalog](https://www.worldmonitor.app/docs/data-sources) for providers, feed tiers, and collection methods.
-
----
-
-## Contributing
-
-Contributions welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
-
-```bash
-npm run typecheck        # Type checking
-npm run build:full       # Production build
-```
-
----
-
-## License
-
-**AGPL-3.0** for non-commercial use. **Commercial license** required for any commercial use.
-
-| Use Case | Allowed? |
-|----------|----------|
-| Personal / research / educational | Yes |
-| Self-hosted (non-commercial) | Yes, with attribution |
-| Fork and modify (non-commercial) | Yes, share source under AGPL-3.0 |
-| Commercial use / SaaS / rebranding | Requires commercial license |
-
-See [LICENSE](LICENSE) for full terms. For commercial licensing, contact the maintainer.
-
-Copyright (C) 2024-2026 Elie Habib. All rights reserved.
-
----
-
-## Author
-
-**Elie Habib** — [GitHub](https://github.com/koala73)
-
-## Contributors
-
-<a href="https://github.com/koala73/worldmonitor/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=koala73/worldmonitor" />
-</a>
-
-## Security Acknowledgments
-
-We thank the following researchers for responsibly disclosing security issues:
-
-- **Cody Richard** — Disclosed three security findings covering IPC command exposure, renderer-to-sidecar trust boundary analysis, and fetch patch credential injection architecture (2026)
-
-See our [Security Policy](./SECURITY.md) for responsible disclosure guidelines.
-
----
-
-<p align="center">
-  <a href="https://worldmonitor.app">worldmonitor.app</a> &nbsp;·&nbsp;
-  <a href="https://www.worldmonitor.app/docs/documentation">docs.worldmonitor.app</a> &nbsp;·&nbsp;
-  <a href="https://finance.worldmonitor.app">finance.worldmonitor.app</a> &nbsp;·&nbsp;
-  <a href="https://commodity.worldmonitor.app">commodity.worldmonitor.app</a>
-</p>
-
-## Star History
-
-<a href="https://api.star-history.com/svg?repos=koala73/worldmonitor&type=Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=koala73/worldmonitor&type=Date&type=Date&theme=dark" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=koala73/worldmonitor&type=Date&type=Date" />
- </picture>
-</a>
+本树继承原项目的 **AGPL-3.0** 等条款，详见 [LICENSE](LICENSE)。商业使用请遵循原项目授权说明。
