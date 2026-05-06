@@ -147,6 +147,33 @@ async function redisDel(url, token, key) {
   return redisCommand(url, token, ['DEL', key]);
 }
 
+/**
+ * Low-level Redis REST command (argv-style). Use for SET NX / GET / DEL outside seed publish.
+ * @param {string[]} command e.g. `['SET','k','v','NX','EX','60']`
+ */
+export async function redisCall(command) {
+  const { url, token } = getRedisCredentials();
+  return redisCommand(url, token, command);
+}
+
+/** @returns {Promise<boolean>} true if key was set (key did not exist) */
+export async function redisSetNxEx(key, value, ttlSeconds) {
+  const data = await redisCall(['SET', key, String(value), 'NX', 'EX', String(ttlSeconds)]);
+  return data?.result === 'OK';
+}
+
+export async function redisDelKey(key) {
+  await redisCall(['DEL', key]);
+}
+
+/** @returns {Promise<string|null>} raw string value or null if missing */
+export async function redisGetStringKey(key) {
+  const data = await redisCall(['GET', key]);
+  const r = data?.result;
+  if (r == null || r === '') return null;
+  return typeof r === 'string' ? r : String(r);
+}
+
 // Upstash REST calls surface transient network issues through fetch/undici
 // errors rather than stable app-level error codes, so we normalize the common
 // timeout/reset/DNS variants here before deciding to skip a seed run.
