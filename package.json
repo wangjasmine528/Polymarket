@@ -51,6 +51,8 @@
     "polymarket:execute": "node scripts/polymarket-execute-order.mjs",
     "polymarket:module3-infer": "node scripts/polymarket-module3-infer.mjs",
     "polymarket:auto-exec": "node scripts/polymarket-redis-auto-exec.mjs",
+    "polymarket:risk-monitor": "node scripts/polymarket-risk-monitor.mjs",
+    "polymarket:risk-close": "node scripts/polymarket-risk-close.mjs",
     "test:feeds": "node scripts/validate-rss-feeds.mjs",
     "test:sidecar": "node --test src-tauri/sidecar/local-api-server.test.mjs api/_cors.test.mjs api/youtube/embed.test.mjs api/cyber-threats.test.mjs api/usni-fleet.test.mjs scripts/ais-relay-rss.test.cjs api/loaders-xml-wms-regression.test.mjs",
     "test:e2e:visual:full": "cross-env VITE_VARIANT=full playwright test -g \"matches golden screenshots per layer and zoom\"",

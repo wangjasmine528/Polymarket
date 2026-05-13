@@ -2,6 +2,9 @@
  * Anthropic Messages API — 供 seed enrichment 与 polymarket-module4-validate 共用。
  */
 
+/** 默认模型（避免已退役的 claude-3-5-haiku-20241022）；可用 ANTHROPIC_MODEL 覆盖 */
+export const DEFAULT_ANTHROPIC_MODEL = 'claude-haiku-4-5-20251001';
+
 /**
  * @param {object} [options]
  * @param {string} [options.apiKey]
@@ -16,7 +19,7 @@ export async function createAnthropicCallLlm(options = {}) {
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY is required for LLM calls');
   }
-  const model = options.model ?? process.env.ANTHROPIC_MODEL ?? 'claude-3-5-haiku-20241022';
+  const model = options.model ?? process.env.ANTHROPIC_MODEL ?? DEFAULT_ANTHROPIC_MODEL;
   const maxTokens = Number(options.maxTokens ?? 1200);
   const timeoutMs = Number(options.timeoutMs ?? process.env.ANTHROPIC_TIMEOUT_MS ?? 0);
   const client = new Anthropic({ apiKey });

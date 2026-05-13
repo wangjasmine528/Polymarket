@@ -237,6 +237,11 @@ export async function enrichCandidatesWithModules234Async(candidates, snapshotRe
         llmCandidatesSucceeded += 1;
       } catch (err) {
         llmCandidatesFailed += 1;
+        if (llmCandidatesFailed === 1) {
+          const msg = err instanceof Error ? err.message : String(err);
+          const label = c?.marketId || c?.title || `#${i}`;
+          console.warn(`  polymarket seed LLM: first failure (candidate ${label}): ${msg}`);
+        }
         const probabilityEstimate = buildSeedProbabilityEstimate(c, candidates);
         const fallbackProb = {
           ...probabilityEstimate,

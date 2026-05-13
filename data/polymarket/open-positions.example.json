@@ -1,0 +1,16 @@
+[
+  {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "tokenId": "REPLACE_WITH_CLOB_OUTCOME_TOKEN_ID",
+    "entryPrice01": 0.35,
+    "peakPrice01": 0.35,
+    "shares": 2,
+    "marketId": "REPLACE_GAMMA_MARKET_ID",
+    "outcome": "yes",
+    "title": "Example: copy to open-positions.json or set POLYMARKET_POSITIONS_LEDGER_PATH",
+    "openedAtMs": 1715616000000,
+    "daysToExpiry": 14,
+    "heldDays": 0,
+    "source": "example"
+  }
+]

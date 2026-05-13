@@ -69,6 +69,8 @@ tmp/
 # Local Polymarket time-series samples (cron append; do not commit)
 data/polymarket/*.jsonl
 data/polymarket/oasis-d-calibration-weights.json
+# Open positions ledger (auto-exec --execute appends; do not commit)
+data/polymarket/open-positions.json
 
 # Local planning documents (not for public repo)
 docs/plans/

@@ -51,16 +51,17 @@ Gamma/Kalshi markets
 | `POLYMARKET_SEED_LLM_MAX` | 启用 LLM 时最多处理候选条数（从列表**开头**计） | `5` |
 | `POLYMARKET_SEED_LLM_DELAY_MS` | 每条「LLM 候选」处理前的间隔（毫秒），减轻限流 | `450` |
 | `ANTHROPIC_API_KEY` | 启用 `POLYMARKET_SEED_LLM` 时**必填** | — |
-| `ANTHROPIC_MODEL` | 可选模型 id | `claude-3-5-haiku-20241022` |
+| `ANTHROPIC_MODEL` | 可选模型 id；未设置时用代码内默认（当前为 **Haiku 4.5** 日期版，避免已退役 3.5 Haiku） | 见 `DEFAULT_ANTHROPIC_MODEL` |
+| `ANTHROPIC_TIMEOUT_MS` | 可选，单次 Messages 请求超时（毫秒）；`0` 表示不额外限制 | `0` |
+
+**凭据安全：** 只把 `ANTHROPIC_API_KEY` 放在本机 **`.env.local`**（仓库已 `.gitignore`），勿写入可被提交的 Markdown、勿贴进 issue/聊天。`scripts/_seed-utils.mjs` 的 `loadEnvFile` 会加载 `.env.local`。
 
 文件不存在时：**不失败**；`smartMoney` 对多数候选为 `available: false`（见下文字段说明）。
 
 **启用真实文稿链路示例：**
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-export POLYMARKET_SEED_LLM=1
-export POLYMARKET_SEED_LLM_MAX=3
+# 在 .env.local 中设置 ANTHROPIC_API_KEY、POLYMARKET_SEED_LLM=1、POLYMARKET_SEED_LLM_MAX 等后：
 node scripts/seed-prediction-markets.mjs
 ```
 
@@ -96,6 +97,8 @@ node scripts/seed-prediction-markets.mjs
 - **真实（`POLYMARKET_SEED_LLM` + Key，且该条在「前 N 条」内）**：`buildProbabilityPrompt` → Claude JSON → `parseLlmProbabilityJson` → **`buildFusedProbabilityEstimateFromLlmParse`**，`mode: llm_fused`；含 `llmExtraction`（reasoning / uncertainty / confidence）。与设计权重融合后再算 `edge`。  
 - 若 LLM 调用失败：回退为 `seed_degraded`，并可能带 `llmFallbackError` 字段。  
 - 超出前 N 条的候选：始终为 `seed_degraded`。
+
+启用 LLM 后的 **人工审查步骤与导出命令** 见：[polymarket-step3-manual-review.md](polymarket-step3-manual-review.md)。
 
 #### `agentValidation`（模块 4）
 

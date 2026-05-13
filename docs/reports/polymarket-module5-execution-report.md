@@ -103,6 +103,8 @@ node --test tests/polymarket-execution.test.mjs tests/polymarket-gamma-clob.test
 
 - [polymarket-seed-modules-1-4-report.md](polymarket-seed-modules-1-4-report.md) — Seed 与模块 1–4  
 - [polymarket-module4-multi-agent-report.md](polymarket-module4-multi-agent-report.md) — 模块 4  
+- [polymarket-module6-risk-report.md](polymarket-module6-risk-report.md) — 模块 6  
+- [polymarket-step3-manual-review.md](polymarket-step3-manual-review.md) — 第三步 Edge 人工审查 风控扫描
 
 ---
 

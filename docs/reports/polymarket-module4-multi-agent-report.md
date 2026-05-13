@@ -30,7 +30,7 @@
 ### 1.2 CLI `scripts/polymarket-module4-validate.mjs`
 
 - 默认 **stub**（不传 `--llm`）。
-- `--llm` 时使用 `@anthropic-ai/sdk`，需 `ANTHROPIC_API_KEY`；模型默认 `claude-3-5-haiku-20241022`，可用 `ANTHROPIC_MODEL` 覆盖。
+- `--llm` 时使用 `@anthropic-ai/sdk`，需 `ANTHROPIC_API_KEY`；模型默认见 `scripts/_polymarket-anthropic.mjs`（`DEFAULT_ANTHROPIC_MODEL`，当前为 Haiku 4.5 日期版），可用 `ANTHROPIC_MODEL` 覆盖。
 
 ### 1.3 npm 脚本
 
@@ -91,7 +91,7 @@ node scripts/polymarket-module4-validate.mjs --input case.json
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-# 可选: export ANTHROPIC_MODEL=claude-3-5-haiku-20241022
+# 可选: export ANTHROPIC_MODEL=claude-haiku-4-5-20251001
 node scripts/polymarket-module4-validate.mjs --input case.json --llm
 ```
 

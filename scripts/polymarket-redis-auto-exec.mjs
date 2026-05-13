@@ -36,6 +36,11 @@ import {
   inferMidFromGammaOutcomePrices,
 } from './_polymarket-gamma-clob.mjs';
 import { createPolymarketClobTradingClient, createAndPostGtcLimitOrder } from './_polymarket-clob-trading.mjs';
+import {
+  appendOpenPosition,
+  resolveLedgerPath,
+  daysToExpiryFromEndDate,
+} from './_polymarket-positions-ledger.mjs';
 
 loadEnvFile(import.meta.url);
 
@@ -75,6 +80,8 @@ function printHelp() {
 环境:
   UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
   POLYMARKET_AUTO_MAX_USD（与 --max-position-usd 二选一）
+  POLYMARKET_LEDGER_APPEND  设为 0 或 false 时，--execute 成功后不写持仓账本（默认写）
+  POLYMARKET_POSITIONS_LEDGER_PATH  账本 JSON 路径（默认 data/polymarket/open-positions.json）
 `);
 }
 
@@ -235,6 +242,31 @@ async function main() {
     await redisCall(['SET', doneKey, payload, 'EX', String(dedupeTtlSec)]);
     console.log('[auto-exec] submitted');
     console.log(JSON.stringify({ plan, response: res }, null, 2));
+
+    const ledgerOff =
+      process.env.POLYMARKET_LEDGER_APPEND === '0' || process.env.POLYMARKET_LEDGER_APPEND === 'false';
+    if (!ledgerOff) {
+      try {
+        const ledgerPath = resolveLedgerPath();
+        const dte = daysToExpiryFromEndDate(c.endDate);
+        await appendOpenPosition(ledgerPath, {
+          tokenId,
+          entryPrice01: marketPrice,
+          peakPrice01: marketPrice,
+          shares: built.userOrder.size,
+          marketId,
+          outcome,
+          title: c.title,
+          openedAtMs: Date.now(),
+          daysToExpiry: dte == null || !Number.isFinite(dte) ? null : dte,
+          source: 'polymarket-redis-auto-exec',
+          orderSummary: { dryRun: false },
+        });
+        console.log(`[auto-exec] ledger: appended open position → ${ledgerPath}`);
+      } catch (e) {
+        console.warn(`[auto-exec] ledger append failed: ${e instanceof Error ? e.message : e}`);
+      }
+    }
   } catch (err) {
     console.error(`[auto-exec] FAILED: ${err instanceof Error ? err.message : err}`);
     process.exitCode = 1;

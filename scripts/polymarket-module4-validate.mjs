@@ -9,8 +9,7 @@
  *   node scripts/polymarket-module4-validate.mjs --demo
  *   node scripts/polymarket-module4-validate.mjs --input path/to/case.json --stub
  *
- * 运行（真实 LLM，需 ANTHROPIC_API_KEY）:
- *   export ANTHROPIC_API_KEY=...
+ * 运行（真实 LLM，需 ANTHROPIC_API_KEY，推荐写在 .env.local，勿提交 git）:
  *   node scripts/polymarket-module4-validate.mjs --input path/to/case.json --llm
  *
  * 单测:
@@ -72,7 +71,7 @@ function printHelp() {
 
 环境变量:
   ANTHROPIC_API_KEY   使用 --llm 时必填
-  ANTHROPIC_MODEL     可选，默认 claude-3-5-haiku-20241022
+  ANTHROPIC_MODEL     可选，默认见 scripts/_polymarket-anthropic.mjs（Haiku 4.5 日期版）
 
 测试:
   node --test tests/polymarket-module4-multi-agent.test.mjs
